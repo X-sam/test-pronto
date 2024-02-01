@@ -1,0 +1,22 @@
+name: rubocop
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - run: |
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/${{github.base_ref}}:refs/remotes/origin/${{github.base_ref}} +refs/heads/${{github.head_ref}}:refs/remotes/origin/${{github.head_ref}}
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
+      - name: Run Pronto
+        run: bundle exec pronto run -c origin/${{ github.base_ref }} --exit-code
+
